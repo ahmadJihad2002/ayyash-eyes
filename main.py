@@ -2,7 +2,7 @@
 import turtle
 import time
 
-# full screen
+# full sc
 screenHeight = 1.0
 screenWidth = 1.0
 wn = turtle.Screen()
