@@ -1,51 +1,94 @@
 # screen dimentions 165 x 102
-import turtle
-import time
 
-# full sc
+import time
+import turtle
+import random
+
 screenHeight = 1.0
 screenWidth = 1.0
 wn = turtle.Screen()
 wn.setup(screenWidth, screenHeight)
 wn.title("Animation Demo")
 wn.bgcolor("black")
-# wn.screensize()
 
-# Register shapes
+facesList = ['normal.gif', 'angry.gif', 'happy.gif', 'skeptic.gif', 'surprised.gif']
+# wn.tracer(0)  # Turn off animation
+for face in facesList:
+    wn.register_shape(face)
+
 wn.register_shape("1.gif")
 wn.register_shape("2.gif")
+wn.register_shape("3.gif")
+print('done')
+randomLooking = True
+
+speed_data = [1, 3, 5, 10, 5, 3, 1]
+
+
+i = 0
 
 
 class Face(turtle.Turtle):
     def __init__(self):
-        # self.screen.screensize(canvwidth=screenWidth, canvheight=screenHeight)
         turtle.Turtle.__init__(self)
         self.penup()
-        self.shape("1.gif")
-        self.color("green")
-        self.frame = 0
-        self.frames = ["1.gif", "2.gif"]
+        self.motion_speed = 1
+        self.size = 1
+        self.shapesize(self.size)
+        self.speed(self.motion_speed)
+
+        self.x_position = 0
+        self.y_position = 0
 
     def animate(self):
-        self.frame += 1
-        if self.frame >= len(self.frames):
-            self.frame = 0
-        self.shape(self.frames[self.frame])
+        # self.motion_speed =random.randint(1, 10)
+        while True:
+            self.motion_speed = speed_data[i + 1 % len(speed_data)]
+
+        self.goto(self.x_position, self.y_position)
+
+
+
+        # self.goto(0, 0)
+        # self.goto(-100, -200)
         # Set timer
-        wn.ontimer(self.animate, 100)
+        wn.ontimer(self.animate, 50)
 
-    def look_right(self):
-        None
+    def normal(self):
+        self.currentFace = '1.gif'
+        self.shape('1.gif')
 
-    def look_left(self):
-        None
+        time.sleep(0.1)
+        # wn.ontimer(self.normal, 50)
+        wn.ontimer(self.transaction('2.gif'), 1000)
+
+    def angry(self):
+        self.currentFace = '2.gif'
+        self.shape('1.gif')
+        time.sleep(0.1)
+        wn.ontimer(self.normal, 50)
+
+    def transaction(self, nextFace):
+        self.currentFace = nextFace
+        self.shape(nextFace)
+        time.sleep(0.1)
+
+        # Turn on turtle animation for future updates
 
 
-player = Face()
-player.animate()
-
+face = Face()
+face.normal()
+face.animate()
+i = 0
 while True:
-    wn.update()
-    print("Main Loop")
 
-# wn.mainloop()
+    if randomLooking:
+        face.y_position = random.randint(-100, 100)
+        face.x_position = random.randint(-100, 100)
+        face.transaction(nextFace=facesList[(len(facesList) + i) % len(facesList)])
+        i += 1
+    else:
+        continue
+
+    wn.update()
+    print('done')
