@@ -1,97 +1,89 @@
-import cv2
-import numpy as np
+import time
 
-# Load your image
-image = cv2.imread('normal.png')
+import pygame
+import os
 
-# Define starting and ending positions
-start_position = (0, 0)
-end_position = (300, 300)
-
-# Determine the maximum movement range
-max_range_x = max(start_position[0], end_position[0]) + image.shape[1]
-max_range_y = max(start_position[1], end_position[1]) + image.shape[0]
-
-# Create a canvas large enough to accommodate the entire movement range
-canvas = np.zeros((max_range_y, max_range_x, 3), dtype=np.uint8)
-
-# Define number of frames
-num_frames = 10
+# Get the paths to the GIF images
+image_folder = "images"  # Replace this with the folder containing your GIF images
+pygame.init()
 
 
-# Define easing function (quadratic ease-in-out)
-def easeInOutQuad(t):
-    return t * t * (3 - 2 * t)
+class Face:
+    def __init__(self):
+
+        self.win = pygame.display.set_mode((1000, 1000))
+        pygame.display.set_caption("Jump Game")
+        image_files = sorted(os.listdir(image_folder))  # Assuming the images are named in the sequence you want
+        # Load the GIF images
+        self.images = [pygame.image.load(os.path.join(image_folder, file)) for file in image_files]
+        # player_img = pygame.image.load('1.gif')  # Replace 'player.png' with your image file path
+
+        # Stores if player is jumping or not
+        self.isjump = False
+
+        # Force (v) up and mass m.
+        self.v = 10
+        self.m = 1
+
+        # Indicates pygame is running
+        self.run = True
+        self.x = 0
+        self.y = 0
+
+        self.currentFace = self.images[0]
+
+        self.i = 0
+
+    def reg_all_shapes(self):
+        pass
+
+    def animation(self):
+        while True:
+            self.win.fill((0, 0, 0))
+
+            # Calculate force (F). F = 1 / 2 * mass * velocity ^ 2.
+            F = (1 / 2) * self.m * (self.v ** 2)
+
+            # Change in the y-coordinate
+            self.y -= F
+
+            # Decreasing velocity while going up and become negative while coming down
+            v = self.v - 1
+
+            # Object reached its maximum height
+            if v < 0:
+                # Negative sign is added to counter negative velocity
+                m = -1
+
+            # Object reached its original state
+            if v == -11:
+                # Making isjump equal to False
+                isjump = False
+
+                # Setting original values to v and m
+                v = 10
+                m = 1
+
+            # Creates time delay of 10ms
+
+            pygame.time.delay(10)
+
+            # It refreshes the window
+            pygame.display.update()
+
+    def normal(self):
+        self.win.fill((0, 0, 0))
+        self.win.blit(self.currentFace, (self.x, self.y))
+        self.currentFace = self.images[(len(self.images) + self.i) % len(self.images)]
+        self.i += 1
+
+        pygame.display.update()
+
+        self.animation()
+
+        time.sleep(.5)
 
 
-# Loop through frames
-for i in range(num_frames):
-    # Calculate current time normalized between 0 and 1
-    t = i / (num_frames - 1)
-
-    # Apply easing function to time
-    eased_t = easeInOutQuad(t)
-
-    # Calculate current position based on eased time
-    current_x = int(start_position[0] + (end_position[0] - start_position[0]) * eased_t)
-    current_y = int(start_position[1] + (end_position[1] - start_position[1]) * eased_t)
-
-    # Clear the canvas
-    canvas.fill(0)
-
-    # Add the image to the canvas at the current position
-    canvas[current_y:current_y + image.shape[0], current_x:current_x + image.shape[1]] = image
-
-    # Display the frame
-    cv2.imshow('Moving Image', canvas)
-    cv2.waitKey(30)  # Adjust waitKey duration for desired frame rate
-    # Set window to fullscreen
-    cv2.namedWindow('Moving Image')
-    cv2.setWindowProperty('Moving Image', cv2.WND_PROP_FULLSCREEN, cv2.WINDOW_FULLSCREEN)
-
-# Wait for a key press and then close all windows
-cv2.waitKey(0)
-cv2.destroyAllWindows()
-
-# import cv2
-# import os
-#
-#
-# def display_images(image_list, transition_time=100, fps=50):
-#     """Display images from a list with smooth transitions.
-#
-#     Args:
-#         image_list (list): List of NumPy arrays representing the images.
-#         transition_time (float, optional): Time duration of the transition between images (in seconds). Defaults to 1.0.
-#         fps (int, optional): Frames per second for displaying images. Defaults to 30.
-#     """
-#     # Calculate number of frames for the transition
-#     num_transition_frames = int(transition_time * fps)
-#     while True:
-#         # Iterate over pairs of consecutive images
-#         for i in range(len(image_list) - 1):
-#             # Extract the current and next images
-#             current_image = image_list[i]
-#             next_image = image_list[i + 1]
-#
-#             # Perform smooth transition between images
-#             for j in range(num_transition_frames + 1):
-#                 alpha = j / num_transition_frames
-#                 blended_image = cv2.addWeighted(current_image, 1 - alpha, next_image, alpha, 0)
-#                 cv2.imshow('Smooth Transition', blended_image)
-#                 cv2.waitKey(1)
-#
-#     # Display the last image without transition
-#     cv2.imshow('Smooth Transition', image_list[-1])
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
-#
-#
-# # Example usage
-# image_names = ["happy.png", 'angry.png', 'normal.png']  # List of image names
-# image_paths = [os.path.join(os.getcwd(), name) for name in image_names]  # Convert image names to absolute paths
-# images = [cv2.imread(path) for path in image_paths]  # Load images
-#
-# # Display images with a smooth transition
-# display_images(images, transition_time=1.0, fps=30)
-#
+face = Face()
+face.normal()
+face.animation()
