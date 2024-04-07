@@ -1,93 +1,78 @@
-import pygame
+import logging
+import os
+import time
 
-# Activate the pygame library.
-# Initiate pygame and give permission
-# to use pygame's functionality.
-pygame.init()
+import turtle
 
-# Create the display surface object
-# of specific dimension (500, 500).
-win = pygame.display.set_mode((2000, 2000))
+import keyboard
 
-# Set the pygame window name.
-pygame.display.set_caption("Jump Game")
+screenHeight = 1.0
+screenWidth = 1.0
+wn = turtle.Screen()
+wn.setup(screenWidth, screenHeight)
+wn.title("Animation Demo")
+wn.bgcolor("black")
+turtle.penup()
 
-# Load the image for the player
-player_img = pygame.image.load('1.gif')  # Replace 'player.png' with your image file path
+# Directory path
+directory = 'thinking'
 
-# Object current coordinates
-x = 0
-y = 0
+# Get the list of files in the directory
+files = os.listdir(directory)
+filtered_files = [file for file in files if not file.startswith('.DS_Store')]
+print(filtered_files)
+# filtered_files = sorted(filtered_files, key=lambda x: int(x.split('_')[1].split('.')[0]))
+# filtered_files = sorted(filtered_files, key=lambda x: int(x.split('.')[0]))
+filtered_files = sorted(filtered_files)
+print(filtered_files)
+for image in filtered_files:
+    wn.register_shape(directory + "/" + image)
 
-# Stores if player is jumping or not
-isjump = False
+#
+# image_folder = "Blink"
+# win = pygame.display.set_mode((1000, 1000))
+# pygame.display.set_caption("Jump Game")
+# image_files = sorted(os.listdir(image_folder))
 
-# Force (v) up and mass m.
-v = 10
-m = 1
+# Assuming the images are named in the sequence you want
+# Load the GIF images
 
-# Indicates pygame is running
-run = True
+frame_count = {'blink': 47,
+               'thinking': 23,
+               # 'happy':60, 'sad':47,'dizzy':67,'excited':24,'neutral':61,'happy2':20,'angry':20,'happy3':26,'bootup3':124,'blink2':20
+               }
 
-# Infinite loop
-while run:
-    win.fill((0, 0, 0))
 
-    # Completely fill the surface object
-    # with black color
+def show(emotion="thinking", count=4):
+    for j in range(frame_count[emotion]):
+        print(j)
 
-    # Drawing object on screen which is a player image
-    win.blit(player_img, (x, y))
+        turtle.shape(directory + "/" + filtered_files[j])
+        # time.sleep(0.05)
 
-    # Iterate over the list of Event objects
-    # that was returned by pygame.event.get() method.
-    for event in pygame.event.get():
+        wn.delay(100)
+        # image = Image.open('Blink-0/' + str(i) + '.png')
 
-        # If event object type is QUIT
-        # then quitting the pygame
-        # and program both.
-        if event.type == pygame.QUIT:
-            # It will make exit the while loop
-            run = False
+        # win.blit(image, (0, 0))
+        # pygame.display.update()
 
-    # Stores keys pressed
-    keys = pygame.key.get_pressed()
 
-    if isjump == False:
+def show_thinking(emotion="blink", count=4):
+    for j in range(frame_count[emotion]):
+        print(j)
 
-        # If space bar is pressed
-        if keys[pygame.K_SPACE]:
-            # Make isjump equal to True
-            isjump = True
+        turtle.shape(directory + "/" + filtered_files[j])
+        time.sleep(0.05)
+        # wn.delay(50)
+        # image = Image.open('Blink-0/' + str(i) + '.png')
+        # win.fill((0, 0, 0))
+        # win.blit(image, (0, 0))
+        # pygame.display.update()
 
-    if isjump:
-        # Calculate force (F). F = 1 / 2 * mass * velocity ^ 2.
-        F = (1 / 2) * m * (v ** 2)
 
-        # Change in the y-coordinate
-        y -= F
+#
 
-        # Decreasing velocity while going up and become negative while coming down
-        v = v - 1
-
-        # Object reached its maximum height
-        if v < 0:
-            # Negative sign is added to counter negative velocity
-            m = -1
-
-        # Object reached its original state
-        if v == -11:
-            # Making isjump equal to False
-            isjump = False
-
-            # Setting original values to v and m
-            v = 10
-            m = 1
-
-    # Creates time delay of 10ms
-    pygame.time.delay(10)
-
-    # It refreshes the window
-    pygame.display.update()
-# Closes the pygame window
-pygame.quit()
+if __name__ == "__main__":
+    # while True:
+    #     if keyboard.is_pressed('space'):
+            show()
